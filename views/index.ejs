@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static Site Deployer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-rocket"></i> Site Deployer</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" id="dashboardLink"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" id="createProjectLink"><i class="fas fa-plus"></i> Create Project</a></li>
+                <li><a href="#" id="uploadFileLink"><i class="fas fa-upload"></i> Upload File</a></li>
+                <% if (user.isAdmin) { %>
+                    <li><a href="/admin"><i class="fas fa-user-shield"></i> Admin Panel</a></li>
+                <% } %>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Welcome, <%= user.username %></h1>
+            </header>
+            <div id="dashboardSection" class="content-section">
+                <h2>Your Projects</h2>
+                <div class="project-grid">
+                    <% projects.forEach(function(project) { %>
+                        <div class="project-card">
+                            <h3><%= project.name %></h3>
+                            <p><i class="fas fa-network-wired"></i> Port: <%= project.port %></p>
+                            <a href="http://localhost:<%= project.port %>" target="_blank" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt"></i> View Site
+                            </a>
+                            <button class="btn btn-secondary view-files" data-project="<%= project.name %>">
+                                <i class="fas fa-folder-open"></i> View Files
+                            </button>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+            <div id="createProjectSection" class="content-section" style="display:none;">
+                <h2>Create New Project</h2>
+                <form id="createProjectForm">
+                    <div class="form-group">
+                        <label for="projectName">Project Name</label>
+                        <input type="text" id="projectName" name="projectName" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Project</button>
+                </form>
+            </div>
+            <div id="uploadFileSection" class="content-section" style="display:none;">
+                <h2>Upload File</h2>
+                <form id="uploadFileForm">
+                    <div class="form-group">
+                        <label for="uploadProjectName">Select Project</label>
+                        <select id="uploadProjectName" name="uploadProjectName" required>
+                            <option value="">Choose a project</option>
+                            <% projects.forEach(function(project) { %>
+                                <option value="<%= project.name %>"><%= project.name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileUpload">Choose File</label>
+                        <input type="file" id="fileUpload" name="fileUpload" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Upload File</button>
+                </form>
+            </div>
+            <div id="fileSystemSection" class="content-section" style="display:none;">
+                <h2>Project Files: <span id="currentProject"></span></h2>
+                <div class="file-system-container">
+                    <div id="fileTree" class="file-tree"></div>
+                    <div id="editor" class="code-editor"></div>
+                </div>
+                <button id="saveFileBtn" class="btn btn-primary" style="display:none;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <button id="createFolderBtn" class="btn btn-secondary">
+                    <i class="fas fa-folder-plus"></i> Create Folder
+                </button>
+                <button id="createFileBtn" class="btn btn-secondary">
+                    <i class="fas fa-file-plus"></i> Create File
+                </button>
+            </div>
+            <!-- Add Create Folder and Create File forms -->
+            <div id="createFolderSection" class="content-section" style="display:none;">
+                <span class="close-btn">&times;</span>
+                <h2>Create New Folder</h2>
+                <form id="createFolderForm">
+                    <div class="form-group">
+                        <label for="folderName">Folder Name</label>
+                        <input type="text" id="folderName" name="folderName" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-folder-plus"></i> Create Folder
+                    </button>
+                </form>
+            </div>
+
+            <div id="createFileSection" class="content-section" style="display:none;">
+                <span class="close-btn">&times;</span>
+                <h2>Create New File</h2>
+                <form id="createFileForm">
+                    <div class="form-group">
+                        <label for="fileName">File Name</label>
+                        <input type="text" id="fileName" name="fileName" required 
+                               placeholder="Enter file name (e.g., index.html, style.css)">
+                    </div>
+                    <div class="form-group">
+                        <label for="fileContent">File Content</label>
+                        <textarea id="fileContent" name="fileContent" rows="10" required
+                                  placeholder="Enter file content here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-plus"></i> Create File
+                    </button>
+                </form>
+            </div>
+            <!-- Add overlay div -->
+            <div class="overlay"></div>
+        </main>
+    </div>
+    <script src="/js/main.js"></script>
+</body>
+</html>
