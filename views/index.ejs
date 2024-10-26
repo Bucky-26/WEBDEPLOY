@@ -3,132 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static Site Deployer</title>
+    <title>Site Deployer</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="app-container">
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <h2><i class="fas fa-rocket"></i> Site Deployer</h2>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <nav class="w-64 bg-gray-800 text-white p-5 fixed h-full overflow-y-auto">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-blue-500"><i class="fas fa-rocket mr-2"></i> Site Deployer</h2>
             </div>
-            <ul class="sidebar-menu">
-                <li><a href="#" class="active" id="dashboardLink"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="#" id="createProjectLink"><i class="fas fa-plus"></i> Create Project</a></li>
-                <li><a href="#" id="uploadFileLink"><i class="fas fa-upload"></i> Upload File</a></li>
-                <% if (user.isAdmin) { %>
-                    <li><a href="/admin"><i class="fas fa-user-shield"></i> Admin Panel</a></li>
-                <% } %>
-                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <ul class="space-y-2">
+                <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700 transition" id="dashboardLink"><i class="fas fa-home mr-2"></i> Dashboard</a></li>
+                <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700 transition" id="createProjectLink"><i class="fas fa-plus mr-2"></i> Create Project</a></li>
+                <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700 transition" id="uploadFileLink"><i class="fas fa-upload mr-2"></i> Upload File</a></li>
+                <li><a href="/logout" class="block py-2 px-4 rounded hover:bg-gray-700 transition"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a></li>
             </ul>
         </nav>
-        <main class="main-content">
-            <header class="main-header">
-                <h1>Welcome, <%= user.username %></h1>
-            </header>
-            <div id="dashboardSection" class="content-section">
-                <h2>Your Projects</h2>
-                <div class="project-grid">
-                    <% projects.forEach(function(project) { %>
-                        <div class="project-card">
-                            <h3><%= project.name %></h3>
-                            <p><i class="fas fa-network-wired"></i> Port: <%= project.port %></p>
-                            <a href="http://localhost:<%= project.port %>" target="_blank" class="btn btn-primary">
-                                <i class="fas fa-external-link-alt"></i> View Site
-                            </a>
-                            <button class="btn btn-secondary view-files" data-project="<%= project.name %>">
-                                <i class="fas fa-folder-open"></i> View Files
-                            </button>
-                        </div>
-                    <% }); %>
+
+        <main class="flex-grow ml-64 p-8">
+            <!-- Projects Section -->
+            <div id="projectsSection" class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Your Projects</h2>
+                    <button onclick="createNewProject()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Create New Project</button>
                 </div>
-            </div>
-            <div id="createProjectSection" class="content-section" style="display:none;">
-                <h2>Create New Project</h2>
-                <form id="createProjectForm">
-                    <div class="form-group">
-                        <label for="projectName">Project Name</label>
-                        <input type="text" id="projectName" name="projectName" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Project</button>
-                </form>
-            </div>
-            <div id="uploadFileSection" class="content-section" style="display:none;">
-                <h2>Upload File</h2>
-                <form id="uploadFileForm">
-                    <div class="form-group">
-                        <label for="uploadProjectName">Select Project</label>
-                        <select id="uploadProjectName" name="uploadProjectName" required>
-                            <option value="">Choose a project</option>
-                            <% projects.forEach(function(project) { %>
-                                <option value="<%= project.name %>"><%= project.name %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="fileUpload">Choose File</label>
-                        <input type="file" id="fileUpload" name="fileUpload" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Upload File</button>
-                </form>
-            </div>
-            <div id="fileSystemSection" class="content-section" style="display:none;">
-                <h2>Project Files: <span id="currentProject"></span></h2>
-                <div class="file-system-container">
-                    <div id="fileTree" class="file-tree"></div>
-                    <div id="editor" class="code-editor"></div>
-                </div>
-                <button id="saveFileBtn" class="btn btn-primary" style="display:none;">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-                <button id="createFolderBtn" class="btn btn-secondary">
-                    <i class="fas fa-folder-plus"></i> Create Folder
-                </button>
-                <button id="createFileBtn" class="btn btn-secondary">
-                    <i class="fas fa-file-plus"></i> Create File
-                </button>
-            </div>
-            <!-- Add Create Folder and Create File forms -->
-            <div id="createFolderSection" class="content-section" style="display:none;">
-                <span class="close-btn">&times;</span>
-                <h2>Create New Folder</h2>
-                <form id="createFolderForm">
-                    <div class="form-group">
-                        <label for="folderName">Folder Name</label>
-                        <input type="text" id="folderName" name="folderName" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-folder-plus"></i> Create Folder
-                    </button>
-                </form>
+                <div id="projectList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <button onclick="loadProjects()" class="mt-6 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">Refresh Projects</button>
             </div>
 
-            <div id="createFileSection" class="content-section" style="display:none;">
-                <span class="close-btn">&times;</span>
-                <h2>Create New File</h2>
-                <form id="createFileForm">
-                    <div class="form-group">
-                        <label for="fileName">File Name</label>
-                        <input type="text" id="fileName" name="fileName" required 
-                               placeholder="Enter file name (e.g., index.html, style.css)">
+            <!-- File Manager Section -->
+            <div id="fileManagerSection" class="bg-white rounded-lg shadow p-6 mb-8 hidden">
+                <h2 class="text-2xl font-bold mb-4">File Manager: <span id="currentProjectName"></span></h2>
+                <div class="flex gap-6 h-[calc(100vh-200px)]">
+                    <div class="w-1/3 overflow-y-auto">
+                        <button id="saveFileBtn" onclick="saveCurrentFile()" class="w-full bg-blue-500 text-white py-1 px-3 rounded mb-2 hover:bg-blue-600 transition">Save</button>
+                        <button id="backToProjectsBtn" class="w-full bg-blue-500 text-white py-2 px-4 rounded mb-4 hover:bg-blue-600 transition">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Projects
+                        </button>
+                        <h3 class="text-xl font-semibold mb-2">Files</h3>
+                        <button onclick="createNewFile()" class="bg-blue-500 text-white py-1 px-2 rounded text-sm hover:bg-blue-600 transition">
+                            <i class="fas fa-plus mr-1"></i> New File
+                        </button>
+                        <ul id="fileList" class="mt-4 space-y-2"></ul>
                     </div>
-                    <div class="form-group">
-                        <label for="fileContent">File Content</label>
-                        <textarea id="fileContent" name="fileContent" rows="10" required
-                                  placeholder="Enter file content here..."></textarea>
+                    <div class="w-2/3 flex flex-col">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-semibold">Edit File: <span id="currentFileName"></span></h3>
+                            <div class="space-x-2">
+                                <button id="saveFileBtn" class="bg-blue-500 text-white py-1 px-3 rounded text-sm hover:bg-blue-600 transition">Save</button>
+                                <button id="deleteFileBtn" class="bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600 transition">Delete</button>
+                            </div>
+                        </div>
+                        <div id="codeEditor" class="flex-grow border border-gray-300 rounded"></div>
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-file-plus"></i> Create File
-                    </button>
-                </form>
+                </div>
             </div>
-            <!-- Add overlay div -->
-            <div class="overlay"></div>
+
+            <!-- Create Project Section -->
+            <div id="createProjectSection" class="bg-white rounded-lg shadow p-6 mb-8 hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Create New Project</h2>
+                    <button onclick="backToProjects()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">Back</button>
+                </div>
+                <div class="max-w-md">
+                    <div class="mb-4">
+                        <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Project Name:</label>
+                        <input type="text" id="projectName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <button onclick="createProject()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Create Project</button>
+                </div>
+            </div>
+
+           <!-- Upload File Section -->
+`<!-- Upload File Section -->
+<div id="uploadFileSection" class="bg-white rounded-lg shadow p-6 mb-8 hidden">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Upload File</h2>
+        <button onclick="backToProjects()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">
+            <i class="fas fa-arrow-left mr-2"></i> Back
+        </button>
+    </div>
+    
+    <form id="uploadFileForm" class="max-w-md" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label for="projectSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Project:</label>
+            <select id="projectSelect" name="projectName" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Choose a project...</option>
+            </select>
+        </div>
+        
+        <div class="mb-4">
+            <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Choose File:</label>
+            <input type="file" id="fileUpload" name="file" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-md file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-blue-50 file:text-blue-700
+                          hover:file:bg-blue-100"/>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <button type="submit" 
+                    class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600 transition flex items-center">
+                <i class="fas fa-upload mr-2"></i>
+                <span>Upload File</span>
+            </button>
+            <div id="uploadProgress" class="hidden">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            </div>
+        </div>
+    </form>
+</div>`
+    
         </main>
     </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="/js/main.js"></script>
 </body>
 </html>

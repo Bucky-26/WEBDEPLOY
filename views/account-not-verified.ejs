@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Not Verified - Static Site Deployer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ... (use the same styles as in register.ejs) ... */
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <h1>Account Not Verified</h1>
+        </div>
+        <p>Your account has not been verified yet. Please check your email (<strong><%= email %></strong>) for a verification link.</p>
+        <% if (locals.message) { %>
+            <p class="success-message"><%= message %></p>
+        <% } %>
+        <% if (locals.error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <form action="/resend-verification" method="POST">
+            <button type="submit" class="btn btn-primary">Resend Verification Email</button>
+        </form>
+        <p class="login-link"><a href="/logout">Logout</a></p>
+    </div>
+</body>
+</html>

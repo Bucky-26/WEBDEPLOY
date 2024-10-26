@@ -1,0 +1,21 @@
+<div id="fileManagerModal" class="modal">
+    <div class="modal-content">
+        <h2>File Manager: <span id="currentProjectName"></span></h2>
+        <div class="Files">
+            <h3>Files</h3>
+            <button onclick="createNewFile()" class="btn btn-primary">New File</button>
+            <ul id="fileList"></ul>
+        </div>
+        <div class="EditFile">
+            <h3>Edit File: <span id="currentFileName"></span></h3>
+            <div id="codeEditor"></div>
+            <div class="file-actions">
+                <button onclick="saveCurrentFile()" class="btn btn-success">Save</button>
+                <button onclick="renameCurrentFile()" class="btn btn-warning">Rename</button>
+                <button onclick="deleteCurrentFile()" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+        <button onclick="closeFileManager()" class="btn btn-secondary">Close</button>
+    </div>
+</div>
+

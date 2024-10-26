@@ -92,18 +92,109 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
+    padding: 20px;
 }
 
 .project-card {
-    background-color: #fff;
-    border-radius: 5px;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.project-header {
+    margin-bottom: 15px;
+}
+
+.project-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.project-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-view {
+    background-color: #28a745;
+}
+
+.btn-manage {
+    background-color: #007bff;
+}
+
+.btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-xs {
+    padding: 4px 8px;
+    font-size: 12px;
+    height: 24px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+    text-align: center;
+    flex: 1;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.no-projects {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: #dc3545;
+    font-weight: bold;
 }
 
 .form-group {
@@ -170,8 +261,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px;
-    margin: 2px 0;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
 }
 
 .file-actions {
@@ -254,3 +345,703 @@ body {
     font-family: monospace;
     resize: vertical;
 }
+
+/* Add these responsive styles */
+@media screen and (max-width: 1024px) {
+    .project-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .file-system-container {
+        height: 400px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 10px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .file-system-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .file-tree {
+        width: 100%;
+        height: 200px;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .code-editor {
+        width: 100%;
+        height: 300px;
+    }
+
+    #createFolderSection,
+    #createFileSection {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="file"],
+    .form-group select {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .main-header {
+        padding: 15px;
+    }
+
+    .content-section {
+        padding: 15px;
+    }
+
+    .sidebar-menu a {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.2em;
+    }
+
+    .file-tree {
+        height: 150px;
+    }
+
+    .code-editor {
+        height: 250px;
+    }
+
+    #fileContent {
+        min-height: 150px;
+    }
+}
+
+/* Add touch-friendly adjustments */
+@media (hover: none) {
+    .file-actions {
+        display: flex;
+    }
+
+    .project-card:hover {
+        transform: none;
+    }
+
+    .btn:active {
+        background-color: #2980b9;
+    }
+}
+
+#fileManagerSection {
+    display: none;
+}
+
+.file-manager-container {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 200px); /* Adjust this value as needed */
+}
+
+.file-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.file-editor {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+#fileList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#fileList li {
+    cursor: pointer;
+    padding: 5px;
+}
+
+#fileList li:hover {
+    background-color: #f0f0f0;
+}
+
+#codeEditor {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.CodeMirror-gutters {
+    border-right: 1px solid #ddd;
+    background-color: #f7f7f7;
+}
+
+.CodeMirror-linenumber {
+    color: #999;
+    padding: 0 5px;
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid #333;
+}
+
+.cm-s-monokai.CodeMirror {
+    background-color: #272822;
+    color: #f8f8f2;
+}
+
+.cm-s-monokai .CodeMirror-gutters {
+    background-color: #272822;
+    border-right: 1px solid #3b3a32;
+}
+
+.cm-s-monokai .CodeMirror-linenumber {
+    color: #d0d0d0;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.file-name {
+    cursor: pointer;
+}
+
+.file-name:hover {
+    color: var(--primary-color);
+}
+
+.btn-sm {
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+#codeEditor {
+    height: 500px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Editor Actions */
+.editor-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* File List */
+.file-list {
+    width: 250px;
+    padding-right: 15px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.file-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* File Manager Styles */
+#fileManagerSection {
+    padding: 20px;
+}
+
+#fileManagerSection h2 {
+    margin-bottom: 15px;
+}
+
+.top-actions {
+    margin-bottom: 20px;
+}
+
+.file-manager-layout {
+    display: flex;
+    gap: 30px;
+}
+
+/* File Section */
+.file-section {
+    width: 300px;
+}
+
+.file-section h3 {
+    margin-bottom: 10px;
+}
+
+.file-list {
+    margin-top: 15px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.file-item:hover {
+    background-color: #f0f0f0;
+}
+
+.file-item.active {
+    background-color: #3498db;
+    color: white;
+}
+
+/* Editor Section */
+.editor-section {
+    flex: 1;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* Button Styles */
+.btn {
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-xs {
+    padding: 3px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+/* Code Editor */
+.code-editor {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    height: calc(100vh - 250px);
+}
+
+.CodeMirror {
+    height: 100% !important;
+    font-size: 14px;
+}
+
+/* File List Styles */
+#fileList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-item {
+    padding: 5px 10px;
+    margin: 2px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.file-item i {
+    margin-right: 8px;
+    color: #666;
+}
+
+/* Selected file style */
+.file-item.selected {
+    background-color: #3498db;
+    color: white;
+}
+
+.file-item.selected i {
+    color: white;
+}
+
+/* File icons */
+.file-icon {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+.btn-sm {
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #2980b9;
+}
+
+.file-manager-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.file-list button {
+    margin-bottom: 10px;
+}
+
+#fileManagerSection {
+    padding: 20px;
+}
+
+.file-manager-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.file-manager-container {
+    display: flex;
+    gap: 20px;
+}
+
+.file-list {
+    width: 30%;
+}
+
+.file-editor {
+    width: 70%;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+#fileList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.file-item i {
+    margin-right: 5px;
+}
+
+.code-editor {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.CodeMirror {
+    height: 400px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.editor-actions .btn {
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+.file-list {
+    width: 30%;
+}
+
+#fileList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.file-item i {
+    margin-right: 10px;
+}
+
+.btn.btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.file-manager-container {
+    display: flex;
+    gap: 20px;
+}
+
+.file-list-section {
+    width: 30%;
+}
+
+.file-editor-section {
+    width: 70%;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-full-width {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#fileList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.file-item i {
+    margin-right: 10px;
+}
+
+.btn {
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.code-editor {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    height: 400px;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.editor-actions .btn {
+    min-width: 50px;  /* Adjust this value as needed to match your design */
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-sm {
+        font-size: 12px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+width: 50px;
+}
+
+
