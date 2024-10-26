@@ -5,7 +5,6 @@ const fs = require('fs').promises;
 const { Project } = require('../../models');
 const { ensureAuthenticated } = require('../../middleware/auth');
 const multer = require('multer');
-
 // Configure multer for file upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -23,45 +22,30 @@ const storage = multer.diskStorage({
 const upload = multer({ 
     storage: storage,
     limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
-});
+}).single('file');
 
 // Update the upload route
-router.post('/upload/:projectName', ensureAuthenticated, upload.single('file'), async (req, res) => {
-    try {
-        console.log('Upload request received:', req.params);
-        console.log('File in request:', req.file);
+router.post('/upload/:projectName', ensureAuthenticated, (req, res) => {
+    console.log('Upload request received:', req.params);
+    
+    upload(req, res, function (err) {
+        if (err) {
+            console.error('Upload error:', err);
+            return res.status(500).json({ error: 'File upload failed: ' + err.message });
+        }
 
         if (!req.file) {
-            return res.status(400).json({ error: 'No file was uploaded' });
+            console.error('No file uploaded');
+            return res.status(400).json({ error: 'No file uploaded' });
         }
-
-        const { projectName } = req.params;
         
-        // Verify project exists and belongs to user
-        const project = await Project.findOne({ 
-            where: { 
-                name: projectName, 
-                UserId: req.user.id 
-            } 
-        });
-
-        if (!project) {
-            return res.status(404).json({ error: 'Project not found' });
-        }
-
-        console.log('File uploaded successfully');
-
+        console.log('File upload successful');
+        console.log('Uploaded file:', req.file);
         res.json({ 
             message: 'File uploaded successfully',
             filename: req.file.filename 
         });
-    } catch (err) {
-        console.error('File upload error:', err);
-        res.status(500).json({ 
-            error: 'File upload failed', 
-            details: err.message 
-        });
-    }
+    });
 });
 
 // Get project files

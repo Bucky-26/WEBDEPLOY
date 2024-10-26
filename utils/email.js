@@ -1,12 +1,12 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    host: '',
+    host: 'mail.ghost-ph.cloud',
     port: 587,
     secure: false,
     auth: {
-        user: '',
-        pass: ''
+        user: 'auth@ghost-ph.cloud',
+        pass: 'Isoy152020'
     },
     tls: {
         // Do not fail on invalid certs

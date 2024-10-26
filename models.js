@@ -60,6 +60,10 @@ const Project = sequelize.define('Project', {
     port: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    deployed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 });
 

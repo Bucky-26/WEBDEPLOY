@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... head content ... -->
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- ... sidebar ... -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <h1>Admin Dashboard</h1>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>Statistics</h2>
+                        <p>Total Users: <%= totalUsers %></p>
+                        <p>Total Projects: <%= totalProjects %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>Recent Users</h2>
+                        <ul>
+                            <% recentUsers.forEach(function(user) { %>
+                                <li><%= user.username %> - <%= user.createdAt.toLocaleDateString() %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <h2>Recent Projects</h2>
+                        <ul>
+                            <% recentProjects.forEach(function(project) { %>
+                                <li><%= project.name %> by <%= project.User.username %> - <%= project.createdAt.toLocaleDateString() %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- ... scripts ... -->
+</body>
+</html>

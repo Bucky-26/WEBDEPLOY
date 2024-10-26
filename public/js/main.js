@@ -153,34 +153,87 @@ function loadProjectFiles(projectName) {
 function openFile(projectName, fileName) {
     console.log(`Opening file: ${fileName} in project: ${projectName}`);
     fetch(`/api/files/file-content/${projectName}/${fileName}`)
-        .then(response => response.text())
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            if (isImageFile(fileName)) {
+                console.log('File is an image, returning blob');
+                return response.blob();
+            } else {
+                console.log('File is not an image, returning text');
+                return response.text();
+            }
+        })
         .then(content => {
+            console.log('Content received, type:', typeof content);
             document.getElementById('currentProjectName').textContent = projectName;
             document.getElementById('currentFileName').textContent = fileName;
             
-            // Show the file manager section
             const fileManagerSection = document.getElementById('fileManagerSection');
             if (fileManagerSection) {
                 fileManagerSection.classList.remove('hidden');
             }
             
-            if (!editor) {
-                initializeCodeMirror();
+            let codeEditorElement = document.getElementById('codeEditor');
+            let imageViewerElement = document.getElementById('imageViewer');
+            
+            // Create elements if they don't exist
+            if (!codeEditorElement) {
+                codeEditorElement = document.createElement('div');
+                codeEditorElement.id = 'codeEditor';
+                fileManagerSection.appendChild(codeEditorElement);
             }
             
-            editor.setValue(content);
-            editor.clearHistory();
+            if (!imageViewerElement) {
+                imageViewerElement = document.createElement('img');
+                imageViewerElement.id = 'imageViewer';
+                imageViewerElement.style.maxWidth = '100%';
+                imageViewerElement.style.maxHeight = '500px';
+                fileManagerSection.appendChild(imageViewerElement);
+            }
             
-            const fileExtension = fileName.split('.').pop().toLowerCase();
-            let mode = 'text/plain';
-            if (fileExtension === 'js') mode = 'javascript';
-            else if (fileExtension === 'html') mode = 'htmlmixed';
-            else if (fileExtension === 'css') mode = 'css';
-            editor.setOption('mode', mode);
+            if (isImageFile(fileName)) {
+                console.log('Displaying image');
+                const imageUrl = URL.createObjectURL(content);
+                imageViewerElement.src = imageUrl;
+                imageViewerElement.alt = fileName;
+                imageViewerElement.style.display = 'block';
+                codeEditorElement.style.display = 'none';
+                
+                // Clear CodeMirror instance if it exists
+                if (editor) {
+                    editor.toTextArea();
+                    editor = null;
+                }
+            } else {
+                console.log('Displaying text in editor');
+                imageViewerElement.style.display = 'none';
+                codeEditorElement.style.display = 'block';
+                
+                if (!editor) {
+                    console.log('Initializing CodeMirror');
+                    initializeCodeMirror();
+                }
+                
+                editor.setValue(content);
+                editor.clearHistory();
+                
+                const fileExtension = fileName.split('.').pop().toLowerCase();
+                let mode = 'text/plain';
+                if (fileExtension === 'js') mode = 'javascript';
+                else if (fileExtension === 'html') mode = 'htmlmixed';
+                else if (fileExtension === 'css') mode = 'css';
+                editor.setOption('mode', mode);
 
-            setTimeout(() => editor.refresh(), 0);
+                setTimeout(() => editor.refresh(), 0);
+            }
         })
-        .catch(error => console.error('Error opening file:', error));
+        .catch(error => {
+            console.error('Error opening file:', error);
+            alert(`Error opening file: ${error.message}`);
+        });
 }
 
 function saveCurrentFile() {
@@ -345,7 +398,7 @@ function initializeCodeMirror() {
         extraKeys: {"Ctrl-Space": "autocomplete"}
     });
 
-    editor.setSize("100%", "100%");
+    editor.setSize("100%", "400px"); // Set a fixed height or adjust as needed
     setTimeout(() => editor.refresh(), 0);
 }
 
@@ -446,7 +499,8 @@ function setupFileUpload(uploadFileForm) {
         try {
             const response = await fetch(`/api/files/upload/${encodeURIComponent(projectName)}`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                // Don't set Content-Type here, let the browser set it automatically for FormData
             });
 
             console.log('Response status:', response.status);
@@ -454,7 +508,7 @@ function setupFileUpload(uploadFileForm) {
 
             let result;
             const contentType = response.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/json") !== -1) {
+            if (contentType && contentType.indexOf(" multipart/form-data") !== -1) {
                 result = await response.json();
             } else {
                 // If the response is not JSON, treat it as text
@@ -490,4 +544,10 @@ document.addEventListener('DOMContentLoaded', function() {
         setupFileUpload(uploadFileForm);
     }
 });
+
+function isImageFile(fileName) {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
+    const extension = fileName.split('.').pop().toLowerCase();
+    return imageExtensions.includes(extension);
+}
 
